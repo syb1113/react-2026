@@ -1,0 +1,12 @@
+.todo-page-container {
+  width: 100%;
+  padding: 2rem 1rem;
+}
+
+/* 响应式设计 - 移动端适配 */
+@media (max-width: 768px) {
+  .todo-page-container {
+    padding: 1rem 0.5rem;
+  }
+}
+
