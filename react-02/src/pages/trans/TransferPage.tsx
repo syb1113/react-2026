@@ -4,7 +4,6 @@ import {
   Typography,
   Space,
   Tag,
-  Checkbox,
   Button,
   Input,
   message,
@@ -13,15 +12,8 @@ import { LeftOutlined, RightOutlined, PlusOutlined } from "@ant-design/icons"; /
 import type { CheckboxProps } from "antd";
 import "./TransferPage.css";
 import dayjs from "dayjs";
+import TransferListPanel, { type TransferItem } from "./components/TransferListPanel";
 
-// 定义数据项的类型接口
-interface TransferItem {
-  id: number;
-  value: string;
-  label: string;
-  time: string;
-}
-const CheckboxGroup = Checkbox.Group;
 /**
  * TransferPage 穿梭框页面
  */
@@ -102,17 +94,16 @@ function TransferPage() {
     // 从左侧移除选中的项
     const itemsToMove = leftSelectArr.filter((item) =>
       leftCheckedValues.includes(item.value)
-    );
+    ).map((item) => ({
+      ...item,
+      time: newDate,
+    }));
+
     setLeftSelectArr(
       leftSelectArr.filter((item) => !leftCheckedValues.includes(item.value))
     );
 
     const sortRrightArr = [...rightSelectArr, ...itemsToMove]
-      .sort((a, b) => a.id - b.id)
-      .map((item) => ({
-        ...item,
-        time: newDate,
-      }));
 
     // 添加到右侧
     setRightSelectArr(sortRrightArr);
@@ -210,39 +201,16 @@ function TransferPage() {
 
         <div className="w-full h-[800px] flex justify-center flex-row gap-1 mb-2! relative">
           {/* 左侧列表 */}
-          <div className="left flex-1 border border-gray-200 rounded-md flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-2.5! sticky top-0 bg-white z-10 border-b border-gray-200">
-              <Checkbox
-                indeterminate={leftIndeterminate}
-                onChange={onLeftCheckAllChange}
-                checked={leftCheckAll}
-              >
-                <span className="text-xl">Todo ({leftSelectArr.length})</span>
-              </Checkbox>
-            </div>
-            <CheckboxGroup
-              className="overflow-y-auto"
-              value={leftCheckedValues}
-              onChange={onLeftChange}
-            >
-              {leftSelectArr.map((item) => (
-                <div
-                  key={item.value}
-                  className="px-2.5! py-1! w-full flex justify-between"
-                >
-                  <Checkbox value={item.value}>
-                    <div
-                      className="text-xl truncate"
-                      style={{ width: "320px" }}
-                    >
-                      {item.label}
-                    </div>
-                  </Checkbox>
-                  <span className="text-sm text-gray-500">{item.time}</span>
-                </div>
-              ))}
-            </CheckboxGroup>
-          </div>
+          <TransferListPanel
+            className="left"
+            title="Todo"
+            items={leftSelectArr}
+            checkedValues={leftCheckedValues}
+            onChange={onLeftChange}
+            checkAll={leftCheckAll}
+            indeterminate={leftIndeterminate}
+            onCheckAllChange={onLeftCheckAllChange}
+          />
 
           {/* 中间操作按钮 */}
           <div className="center w-[80px] flex flex-col gap-1 justify-center">
@@ -266,41 +234,17 @@ function TransferPage() {
           </div>
 
           {/* 右侧列表 */}
-          <div className="right flex-1 border border-gray-200 rounded-md flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-2.5! sticky top-0 bg-white z-10 border-b border-gray-200">
-              <Checkbox
-                indeterminate={rightIndeterminate}
-                onChange={onRightCheckAllChange}
-                checked={rightCheckAll}
-              >
-                <span className="text-xl">
-                  历史Todo({rightSelectArr.length})
-                </span>
-              </Checkbox>
-            </div>
-            <CheckboxGroup
-              className="overflow-y-auto"
-              value={rightCheckedValues}
-              onChange={onRightChange}
-            >
-              {rightSelectArr.map((item) => (
-                <div
-                  key={item.value}
-                  className="px-2.5! py-1! w-full flex justify-between"
-                >
-                  <Checkbox value={item.value}>
-                    <div
-                      className="text-xl line-through text-gray-400 truncate"
-                      style={{ width: "320px" }}
-                    >
-                      {item.label}
-                    </div>
-                  </Checkbox>
-                  <span className="text-sm text-gray-500">{item.time}</span>
-                </div>
-              ))}
-            </CheckboxGroup>
-          </div>
+          <TransferListPanel
+            className="right"
+            title="历史Todo"
+            items={rightSelectArr}
+            checkedValues={rightCheckedValues}
+            onChange={onRightChange}
+            checkAll={rightCheckAll}
+            indeterminate={rightIndeterminate}
+            onCheckAllChange={onRightCheckAllChange}
+            itemLabelClassName="line-through text-gray-400"
+          />
         </div>
       </Card>
     </div>
