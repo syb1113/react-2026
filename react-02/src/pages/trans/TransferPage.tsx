@@ -97,6 +97,8 @@ function TransferPage() {
       return;
     }
 
+    const newDate = dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss");
+
     // 从左侧移除选中的项
     const itemsToMove = leftSelectArr.filter((item) =>
       leftCheckedValues.includes(item.value)
@@ -105,9 +107,12 @@ function TransferPage() {
       leftSelectArr.filter((item) => !leftCheckedValues.includes(item.value))
     );
 
-    const sortRrightArr = [...rightSelectArr, ...itemsToMove].sort(
-      (a, b) => a.id - b.id
-    );
+    const sortRrightArr = [...rightSelectArr, ...itemsToMove]
+      .sort((a, b) => a.id - b.id)
+      .map((item) => ({
+        ...item,
+        time: newDate,
+      }));
 
     // 添加到右侧
     setRightSelectArr(sortRrightArr);
