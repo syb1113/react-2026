@@ -1,6 +1,7 @@
 import type { RouteObject } from 'react-router-dom'
 import { todoRoutes } from './todo'
 import { transferRoutes } from './transfer'
+import { calendarRoutes } from "@/router/calendat";
 
 /**
  * 路由元信息类型定义
@@ -32,6 +33,7 @@ export const routes: RouteConfig[] = [
   ...todoRoutes,
   // 穿梭框模块路由
   ...transferRoutes,
+  ...calendarRoutes,
   // 404 页面路由（必须放在最后）
   {
     path: '*',
