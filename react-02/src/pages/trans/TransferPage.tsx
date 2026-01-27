@@ -139,7 +139,6 @@ function TransferPage() {
 
   const handleAddTodo = () => {
     if (inputValue.trim() === "") {
-      // 使用 antd 的 message 组件显示提示信息
       message.warning("请输入待办事项内容");
       return; // 如果为空，直接返回，不添加
     }
