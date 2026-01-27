@@ -1,4 +1,5 @@
 import type { Dayjs } from "dayjs";
+import { useState } from "react";
 
 interface MonthCalendarProps {
   value: Dayjs;
@@ -6,6 +7,8 @@ interface MonthCalendarProps {
 
 export interface DayInfo {
   date: Dayjs;
+  isToday?: boolean;
+  isSlected: boolean;
   isCurrentMonth: boolean;
 }
 const getAllDays = (_date: Dayjs) => {
@@ -20,6 +23,7 @@ const getAllDays = (_date: Dayjs) => {
     daysInfo[i] = {
       date: startDate.subtract(day - i, "day"),
       //不是本月的
+      isSlected: false,
       isCurrentMonth: false,
     };
   }
@@ -30,31 +34,49 @@ const getAllDays = (_date: Dayjs) => {
 
     daysInfo[i + day] = {
       date: calcDate,
+      isToday: calcDate.isSame(new Date(), "day"),
+      isSlected: calcDate.isSame(new Date(), "day"),
       isCurrentMonth: calcDate.month() === _date.month(),
     };
   }
   return daysInfo;
 };
 
-const renderDay = (dayInfo: DayInfo) => {
-  return (
-    <div
-      className={[
-        "calendar-month-day-item flex-1 h-40 text-end p-2 border-t-2 border-t-gray-300",
-        !dayInfo.isCurrentMonth && "text-gray-300",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      <span>{dayInfo.date.date()}</span>
-    </div>
-  );
-};
-
 function MonthCalendar(props: MonthCalendarProps) {
   const weekList = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
-  const allDays = getAllDays(props.value);
+  const [allDays, setAllDays] = useState(getAllDays(props.value));
+
+  const selectDay = (dayInfo: DayInfo) => {
+    setAllDays(
+      allDays.map((item) => {
+        if (item.date.isSame(dayInfo.date)) {
+          item.isSlected = true;
+        } else {
+          item.isSlected = false;
+        }
+        return item;
+      })
+    );
+  };
+
+  const renderDay = (dayInfo: DayInfo) => {
+    return (
+      <div
+        className={[
+          "calendar-month-day-item flex-1 h-40 text-end p-2 border-t-2 border-t-gray-300",
+          !dayInfo.isCurrentMonth && "text-gray-300",
+          dayInfo.isToday && "border-t-blue-600!",
+          dayInfo.isSlected && "bg-blue-100 text-blue-600",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        onClick={() => selectDay(dayInfo)}
+      >
+        <span>{dayInfo.date.date()}</span>
+      </div>
+    );
+  };
 
   return (
     <div className="calendar-month w-full mt-4!">
@@ -68,7 +90,7 @@ function MonthCalendar(props: MonthCalendarProps) {
           </div>
         ))}
       </div>
-      <div className="calendar-month-day-list w-full grid grid-cols-7 gap-2">
+      <div className="calendar-month-day-list w-full grid grid-cols-7 gap-x-2">
         {allDays.map((dayInfo) => renderDay(dayInfo))}
       </div>
     </div>
