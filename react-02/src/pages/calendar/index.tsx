@@ -8,8 +8,8 @@ function Calendar() {
 
   return (
     <div className="calendar bg-white p-4!">
-      <Header />
-      <MonthCalendar value={date} />
+      <Header value={date}/>
+      <MonthCalendar value={date}/>
     </div>
   )
 }

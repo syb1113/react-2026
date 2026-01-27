@@ -57,7 +57,7 @@ function MonthCalendar(props: MonthCalendarProps) {
   const allDays = getAllDays(props.value);
 
   return (
-    <div className="calendar-month w-full">
+    <div className="calendar-month w-full mt-4!">
       <div className="calendar-month-week-list w-full flex gap-2">
         {weekList.map((item) => (
           <div
