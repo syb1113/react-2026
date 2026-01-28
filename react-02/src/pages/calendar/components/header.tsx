@@ -59,8 +59,8 @@ function Header(props:HeaderProps) {
 
   const handleChangeYear = (year: number) => {
     const next = value.year(year);
-    const safYear = Math.min(value.date(), next.daysInMonth());
-    toady(next.date(safYear).format("YYYY-MM-DD"));
+    const safeYear = Math.min(value.date(), next.daysInMonth());
+    toady(next.date(safeYear).format("YYYY-MM-DD"));
   };
   const handleChangeMonth = (month: number) => {
     const next = value.month(month - 1);

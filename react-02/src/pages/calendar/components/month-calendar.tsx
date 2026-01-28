@@ -1,17 +1,19 @@
 import type { Dayjs } from "dayjs";
 import { useState } from "react";
 import DaysDrawer from "./drawer";
+import { v4 as uuidv4 } from "uuid";
 
 interface MonthCalendarProps {
   value: Dayjs;
 }
 
 export interface DayInfo {
-  id: number;
+  id: string;
   date: Dayjs;
   isToday?: boolean;
   isSlected: boolean;
   isCurrentMonth: boolean;
+  todo?:string;
 }
 const getAllDays = (_date: Dayjs) => {
   const startDate = _date.startOf("month");
@@ -23,7 +25,7 @@ const getAllDays = (_date: Dayjs) => {
   // 填充上个月的日期（前 day 个位置）
   for (let i = 0; i < day; i++) {
     daysInfo[i] = {
-      id:i,
+      id:uuidv4(),
       date: startDate.subtract(day - i, "day"),
       //不是本月的
       isSlected: false,
@@ -36,7 +38,7 @@ const getAllDays = (_date: Dayjs) => {
     const calcDate = startDate.add(i, "day");
 
     daysInfo[i + day] = {
-      id:i + day,
+      id:uuidv4(),
       date: calcDate,
       isToday: calcDate.isSame(new Date(), "day"),
       isSlected: calcDate.isSame(_date, "day"),
@@ -51,6 +53,7 @@ function MonthCalendar(props: MonthCalendarProps) {
 
   const [allDays, setAllDays] = useState(getAllDays(props.value));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [dateID, setDateID] = useState<string>('');
 
   const selectDay = (dayInfo: DayInfo) => {
     setAllDays(
@@ -65,8 +68,9 @@ function MonthCalendar(props: MonthCalendarProps) {
     );
   };
 
-  const handleDouble = () => {
-    setDrawerOpen(true);  
+  const handleDouble = (id:string) => {
+    setDrawerOpen(true);
+    setDateID(id)
   };
 
   const renderDay = (dayInfo: DayInfo) => {
@@ -81,7 +85,7 @@ function MonthCalendar(props: MonthCalendarProps) {
           .filter(Boolean)
           .join(" ")}
         onClick={() => selectDay(dayInfo)}
-        onDoubleClick={() => handleDouble()}
+        onDoubleClick={() => handleDouble(dayInfo.id)}
       >
         <div className="item-header flex justify-between">
           <span>{dayInfo.date.date()}</span>
@@ -105,7 +109,7 @@ function MonthCalendar(props: MonthCalendarProps) {
       <div className="calendar-month-day-list w-full grid grid-cols-7 gap-x-2">
         {allDays.map((dayInfo) => renderDay(dayInfo))}
       </div>
-      <DaysDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <DaysDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} dateId={dateID}/>
     </div>
   );
 }
