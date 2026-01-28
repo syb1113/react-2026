@@ -1,7 +1,9 @@
-import { Select } from "antd";
+import { Select, Button } from "antd";
 import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 interface HeaderProps {
   value: Dayjs;
+  toady: (value:string) => void;
 }
 
 const getDateRange = (date: Dayjs): DateRange =>{
@@ -49,22 +51,42 @@ const getDateRange = (date: Dayjs): DateRange =>{
   };
 }
 function Header(props:HeaderProps) {
-  const { value } = props;
+  const { value, toady } = props;
 
-  const { years, months } = getDateRange(value);
+  const date = dayjs();
+
+  const { years, months } = getDateRange(date);
+
+  const handleChangeYear = (year: number) => {
+    const next = value.year(year);
+    const safYear = Math.min(value.date(), next.daysInMonth());
+    toady(next.date(safYear).format("YYYY-MM-DD"));
+  };
+  const handleChangeMonth = (month: number) => {
+    const next = value.month(month - 1);
+    const safeDay = Math.min(value.date(), next.daysInMonth());
+    toady(next.date(safeDay).format("YYYY-MM-DD"));
+  };
+
+  const handleToday = () => {
+    toady(dayjs().format("YYYY-MM-DD"));
+  };
 
   return (
     <div className="calendar-month-header flex gap-2 justify-end">
       <Select
-        defaultValue={years.find((item) => item.isCurrent)?.value}
+        value={value.year()}
         style={{ width: 120 }}
         options={years}
+        onChange={(v) => handleChangeYear(v)}
       />
       <Select
-        defaultValue={months.find((item) => item.isCurrent)?.value}
+        value={value.month() + 1}
         style={{ width: 120 }}
+        onChange={(v) => handleChangeMonth(v)}
         options={months}
       />
+      <Button onClick={handleToday}>今天</Button>
     </div>
   );
 }
