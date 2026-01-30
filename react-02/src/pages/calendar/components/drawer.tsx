@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Drawer, DatePicker, Form, Input, Flex, Button } from "antd";
 import { useCallback } from "react";
 import { Dayjs } from "dayjs";
@@ -7,6 +7,7 @@ interface DaysDrawerProps {
   open: boolean;
   onClose: (val?: FormValues) => void;
   dateId: string;
+  minDate?: Dayjs | null; // 最小可选日期
 }
 
 interface FormValues {
@@ -30,8 +31,30 @@ const formItemLayout = {
   },
 };
 
-const DaysDrawer: React.FC<DaysDrawerProps> = ({ open, onClose, dateId }) => {
+const DaysDrawer: React.FC<DaysDrawerProps> = ({
+  open,
+  onClose,
+  dateId,
+  minDate,
+}) => {
   const [form] = Form.useForm();
+
+  // 当弹窗打开时，设置默认日期
+  useEffect(() => {
+    if (open && minDate) {
+      // 设置默认的日期范围为选中的日期
+      form.setFieldsValue({
+        date: [minDate, minDate],
+      });
+    }
+  }, [open, minDate, form]);
+
+  // 禁用早于 minDate 的日期
+  const disabledDate = (current: Dayjs) => {
+    if (!minDate) return false;
+    // 禁用早于 minDate 的日期
+    return current && current < minDate.startOf("day");
+  };
 
   // 使用 useCallback 缓存 handleSubmit 函数（rerender-memo）
   const handleSubmit = useCallback(() => {
@@ -89,7 +112,7 @@ const DaysDrawer: React.FC<DaysDrawerProps> = ({ open, onClose, dateId }) => {
             name="date"
             rules={[{ required: true, message: "请选择日期" }]}
           >
-            <RangePicker />
+            <RangePicker disabledDate={disabledDate} />
           </Form.Item>
           <Form.Item label="备注" name="remarks">
             <Input.TextArea placeholder="输入备注..." />
