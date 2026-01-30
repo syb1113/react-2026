@@ -1,3 +1,92 @@
 .calendar {
   width: 100%;
 }
+
+// 事件样式 - 类似 Mac 日历的连续显示效果
+.event-item {
+  background-color: #3b82f6; // 蓝色背景
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  // 单日事件 - 完整圆角
+  &.event-single {
+    border-radius: 4px;
+  }
+
+  // 事件开始 - 左侧圆角，右侧直角
+  &.event-start {
+    border-radius: 4px 0 0 4px;
+    margin-right: -8px; // 连接到下一个事件
+    padding-right: 6px;
+  }
+
+  // 事件中间 - 两侧都是直角，实现无缝连接
+  &.event-middle {
+    border-radius: 0;
+    margin-left: -8px;
+    margin-right: -8px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  // 事件结束 - 左侧直角，右侧圆角
+  &.event-end {
+    border-radius: 0 4px 4px 0;
+    margin-left: -8px; // 连接上一个事件
+    padding-left: 6px;
+  }
+}
+
+// 确保事件在跨周显示时保持连贯
+.calendar-month-day-list {
+  // 每周的第一天，事件开始样式重置
+  .calendar-month-day-item:nth-child(7n + 1) {
+    .event-start,
+    .event-middle,
+    .event-end {
+      margin-left: 0;
+      padding-left: 8px;
+    }
+
+    .event-start {
+      border-radius: 4px 0 0 4px;
+    }
+
+    .event-middle {
+      border-radius: 0;
+    }
+
+    .event-end {
+      border-radius: 0 4px 4px 0;
+    }
+  }
+
+  // 每周的最后一天，事件结束样式重置
+  .calendar-month-day-item:nth-child(7n) {
+    .event-start,
+    .event-middle,
+    .event-end {
+      margin-right: 0;
+      padding-right: 8px;
+    }
+
+    .event-start {
+      border-radius: 4px 0 0 4px;
+    }
+
+    .event-middle {
+      border-radius: 0;
+    }
+
+    .event-end {
+      border-radius: 0 4px 4px 0;
+    }
+  }
+}
+

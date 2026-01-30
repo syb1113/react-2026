@@ -1,14 +1,24 @@
 import React from "react";
 import { Drawer, DatePicker, Form, Input, Flex, Button } from "antd";
+import { useCallback } from "react";
+import { Dayjs } from "dayjs";
 
 interface DaysDrawerProps {
   open: boolean;
-  onClose: () => void;
+  onClose: (val?: FormValues) => void;
   dateId: string;
+}
+
+interface FormValues {
+  id: string;
+  name: string;
+  date: Dayjs[];
+  remarks: string;
 }
 
 const { RangePicker } = DatePicker;
 
+// 将静态配置移到组件外部，避免每次渲染都重新创建（rendering-hoist-jsx）
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -23,17 +33,25 @@ const formItemLayout = {
 const DaysDrawer: React.FC<DaysDrawerProps> = ({ open, onClose, dateId }) => {
   const [form] = Form.useForm();
 
-  const handleSubmit = () => {
-    console.log("提交表单",dateId);
+  // 使用 useCallback 缓存 handleSubmit 函数（rerender-memo）
+  const handleSubmit = useCallback(() => {
+    console.log("提交表单", dateId);
     form.validateFields().then(() => {
-      console.log(form.getFieldsValue());
+      const fieldsValue = form.getFieldsValue();
+      const data = {
+        id: dateId,
+        ...fieldsValue,
+      };
+      onClose(data);
+      form.resetFields();
     });
-  };
-  
-  const handleCancel = () => {
+  }, [dateId, onClose, form]);
+
+  // 使用 useCallback 缓存 handleCancel 函数
+  const handleCancel = useCallback(() => {
     form.resetFields();
     onClose();
-  };
+  }, [onClose, form]);
 
   return (
     <>
@@ -45,8 +63,10 @@ const DaysDrawer: React.FC<DaysDrawerProps> = ({ open, onClose, dateId }) => {
         maskClosable={false}
         size={600}
         footer={
-          <Flex gap="small" wrap justify='flex-end'>
-            <Button type="primary" onClick={handleSubmit}>确认</Button>
+          <Flex gap="small" wrap="wrap" justify="flex-end">
+            <Button type="primary" onClick={handleSubmit}>
+              确认
+            </Button>
             <Button onClick={handleCancel}>取消</Button>
           </Flex>
         }
@@ -71,10 +91,7 @@ const DaysDrawer: React.FC<DaysDrawerProps> = ({ open, onClose, dateId }) => {
           >
             <RangePicker />
           </Form.Item>
-          <Form.Item
-            label="备注"
-            name="remarks"
-          >
+          <Form.Item label="备注" name="remarks">
             <Input.TextArea placeholder="输入备注..." />
           </Form.Item>
         </Form>
