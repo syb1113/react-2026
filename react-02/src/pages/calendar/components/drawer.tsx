@@ -19,7 +19,7 @@ interface FormValues {
 
 const { RangePicker } = DatePicker;
 
-// 将静态配置移到组件外部，避免每次渲染都重新创建（rendering-hoist-jsx）
+// 将静态配置移到组件外部，避免每次渲染都重新创建
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -56,7 +56,7 @@ const DaysDrawer: React.FC<DaysDrawerProps> = ({
     return current && current < minDate.startOf("day");
   };
 
-  // 使用 useCallback 缓存 handleSubmit 函数（rerender-memo）
+  // 使用 useCallback 缓存 handleSubmit 函数
   const handleSubmit = useCallback(() => {
     console.log("提交表单", dateId);
     form.validateFields().then(() => {

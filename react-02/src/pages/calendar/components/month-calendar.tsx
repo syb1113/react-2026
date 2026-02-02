@@ -16,8 +16,9 @@ export interface StoredEvent {
   id: string;
   name: string;
   remarks: string;
-  startDate: string; // YYYY-MM-DD 格式
-  endDate: string; // YYYY-MM-DD 格式
+  // YYYY-MM-DD 格式
+  startDate: string;
+  endDate: string;
 }
 
 export interface DayInfo {
@@ -189,7 +190,7 @@ const applyEventsToDays = (
           remarks: event.remarks,
           position,
         };
-        break; // 只取第一个匹配的事件
+        break;
       }
     }
 
@@ -224,7 +225,6 @@ function MonthCalendar(props: MonthCalendarProps) {
   }, []);
 
   // 使用 useCallback 缓存 handleDouble 函数
-  // 优化：直接接收 dayInfo 参数，避免订阅 allDays 状态（rerender-defer-reads）
   const handleDouble = useCallback((dayInfo: DayInfo) => {
     // 如果该日期已有事件，不允许添加
     if (dayInfo.todo) {
