@@ -1,6 +1,6 @@
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import { useState, useCallback, memo, useMemo } from "react";
+import { useState, useCallback, memo, useMemo, useEffect } from "react";
 import { message } from "antd";
 import DaysDrawer from "./drawer";
 import { v4 as uuidv4 } from "uuid";
@@ -11,7 +11,6 @@ interface MonthCalendarProps {
   setEvents: React.Dispatch<React.SetStateAction<Map<string, StoredEvent>>>;
 }
 
-// 存储的事件数据结构
 export interface StoredEvent {
   id: string;
   name: string;
@@ -24,7 +23,6 @@ export interface StoredEvent {
 export interface DayInfo {
   id: string;
   date: Dayjs;
-  isToday?: boolean;
   isSlected: boolean;
   isCurrentMonth: boolean;
   // 单个事件
@@ -87,8 +85,7 @@ const DayItem = memo(function DayItem({
       className={[
         "calendar-month-day-item flex-1 h-40 text-start border-t-2 p-2! border-t-gray-300",
         !dayInfo.isCurrentMonth && "text-gray-300",
-        dayInfo.isToday && "border-t-blue-600",
-        dayInfo.isSlected && "bg-blue-100 text-blue-600",
+        dayInfo.isSlected && "bg-blue-100 text-blue-600 border-t-blue-600!",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -133,7 +130,6 @@ const getAllDays = (_date: Dayjs) => {
     daysInfo[i + day] = {
       id: uuidv4(),
       date: calcDate,
-      isToday: calcDate.isSame(new Date(), "day"),
       isSlected: calcDate.isSame(_date, "day"),
       isCurrentMonth: calcDate.month() === _date.month(),
     };
@@ -211,7 +207,12 @@ function MonthCalendar(props: MonthCalendarProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dateID, setDateID] = useState<string>("");
   // 保存被点击的日期，用于限制日期选择范围
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+
+  // 当 value prop 变化时（如点击"今天"），同步更新 selectedDate
+  useEffect(() => {
+    setSelectedDate(value);
+  }, [value]);
 
   // 根据当前月份、事件和选中的日期，生成日历数据
   const allDays = useMemo(() => {
