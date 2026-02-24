@@ -87,7 +87,7 @@ const DayItem = memo(function DayItem({
       className={[
         "calendar-month-day-item flex-1 h-40 text-start border-t-2 p-2! border-t-gray-300",
         !dayInfo.isCurrentMonth && "text-gray-300",
-        dayInfo.isToday && "border-t-blue-600!",
+        dayInfo.isToday && "border-t-blue-600",
         dayInfo.isSlected && "bg-blue-100 text-blue-600",
       ]
         .filter(Boolean)

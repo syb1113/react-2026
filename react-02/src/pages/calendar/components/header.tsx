@@ -1,4 +1,3 @@
-// bundle-barrel-imports: 直接导入具体组件，避免打包整个 antd 库
 import { Select, Button } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
